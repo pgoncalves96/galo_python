@@ -1,4 +1,8 @@
 def exibir_tabuleiro(board):
+    """
+    Desenha o tabuleiro no terminal usando f-strings para 
+    inserir os valores da lista 'board' nas posições corretas.
+    """
     print(f"\n {board[0]} | {board[1]} | {board[2]} ")
     print("-----------")
     print(f" {board[3]} | {board[4]} | {board[5]} ")
@@ -6,41 +10,62 @@ def exibir_tabuleiro(board):
     print(f" {board[6]} | {board[7]} | {board[8]} \n")
 
 def verificar_vitoria(b, p):
-    # Linhas, Colunas e Diagonais
-    vitorias = [(0,1,2), (3,4,5), (6,7,8), (0,3,6), (1,4,7), (2,5,8), (0,4,8), (2,4,6)]
+    """
+    Define todas as 8 combinações vencedoras (3 linhas, 3 colunas, 2 diagonais).
+    Verifica se em alguma dessas combinações (i, j, k) todos os espaços 
+    têm o símbolo do jogador atual (p).
+    """
+    vitorias = [
+        (0,1,2), (3,4,5), (6,7,8), # Horizontais
+        (0,3,6), (1,4,7), (2,5,8), # Verticais
+        (0,4,8), (2,4,6)           # Diagonais
+    ]
+    # Retorna True se o jogador 'p' preencheu qualquer uma das tuplas acima
     return any(b[i] == b[j] == b[k] == p for i, j, k in vitorias)
 
 def jogar():
+    # Inicializa o tabuleiro como uma lista de strings de "1" a "9"
     tabuleiro = [str(i+1) for i in range(9)]
-    jogador_atual = "X"
-    jogadas = 0
+    jogador_atual = "X" # O jogo começa sempre com o X
+    jogadas = 0         # Contador para detetar empate (máximo 9 jogadas)
 
     print("--- JOGO DO GALO ---")
     
+    # O jogo corre enquanto houver espaços vazios (máximo 9)
     while jogadas < 9:
         exibir_tabuleiro(tabuleiro)
+        
         try:
+            # Pede a posição e subtrai 1 (porque as listas em Python começam no índice 0)
             escolha = int(input(f"Jogador {jogador_atual}, escolha uma posição (1-9): ")) - 1
             
+            # Validação: verifica se a posição já foi marcada com X ou O
             if tabuleiro[escolha] in ["X", "O"]:
                 print("Essa posição já está ocupada! Tenta outra.")
                 continue
-                
+            
+            # Atualiza o tabuleiro com o símbolo do jogador
             tabuleiro[escolha] = jogador_atual
             jogadas += 1
             
+            # Verifica se esta jogada resultou em vitória
             if verificar_vitoria(tabuleiro, jogador_atual):
                 exibir_tabuleiro(tabuleiro)
                 print(f"Parabéns! O jogador {jogador_atual} venceu!")
-                return
+                return # Encerra a função e o jogo
 
+            # Alterna o jogador: se era X, vira O; se era O, vira X
             jogador_atual = "O" if jogador_atual == "X" else "X"
             
         except (ValueError, IndexError):
+            # Captura erros de digitação (letras ou números fora de 1-9)
             print("Entrada inválida. Digita um número de 1 a 9.")
 
+    # Se o ciclo terminar sem um 'return' de vitória, é porque empatou
     exibir_tabuleiro(tabuleiro)
     print("Empate! O galo não cantou para ninguém.")
 
+# Ponto de entrada padrão do Python para correr o script
 if __name__ == "__main__":
+    jogar()
     jogar()
